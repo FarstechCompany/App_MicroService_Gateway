@@ -1,0 +1,32 @@
+version: '3.9'
+
+services:
+  ocelot-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5000:5000"
+      - "5001:5001"
+    depends_on:
+      - consul
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ASPNETCORE_HTTPS_PORT=https://+:5001      
+      - ASPNETCORE_URLS=http://+:5000   
+      - CONSUL_HOST=consul
+      - CONSUL_PORT=8500
+    networks:
+      - ocelot-network
+
+  consul:
+    image: hashicorp/consul:latest
+    ports:
+      - "8500:8500"
+    command: agent -dev -client=0.0.0.0
+    networks:
+      - ocelot-network
+
+networks:
+  ocelot-network:
+    driver: bridge

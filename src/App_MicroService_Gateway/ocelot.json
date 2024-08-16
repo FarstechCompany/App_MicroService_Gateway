@@ -1,40 +1,55 @@
 {
   "Routes": [
     {
-      "UpstreamPathTemplate": "/gateway/job/{everything}",
-      "UpstreamHttpMethod": [ "Get","Put", "Post" ],
+      "ServiceName": "Products",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "UpstreamPathTemplate": "/Products/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Put",
+        "Post"
+      ],
       "DownstreamPathTemplate": "/api/{everything}",
       "DownstreamScheme": "https",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5001
-        }
-      ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "10s",
-        "PeriodTimespan": 10,
-        "Limit": 3
-      }
+      "SwaggerKey": "product"
     },
     {
-      "UpstreamPathTemplate": "/gateway/wallet/{everything}",
-      "UpstreamHttpMethod": [ "Get", "Post", "Put" ],
-      "DownstreamPathTemplate": "/api/{everything}",
-      "DownstreamScheme": "http",
-      "DownstreamHostAndPorts": [
-        {
-          "Host": "localhost",
-          "Port": 5245
-        }
+      "ServiceName": "JobService",
+      "LoadBalancerOptions": {
+        "Type": "LeastConnection"
+      },
+      "UpstreamPathTemplate": "/Job/{everything}",
+      "UpstreamHttpMethod": [
+        "Get",
+        "Put",
+        "Post"
       ],
-      "RateLimitOptions": {
-        "EnableRateLimiting": true,
-        "Period": "10s",
-        "PeriodTimespan": 10,
-        "Limit": 3
-      }
+      "DownstreamPathTemplate": "/api/{everything}",
+      "DownstreamScheme": "http"
     }
-  ]
+  ],
+  "SwaggerEndPoints": [
+    {
+      "Key": "product",
+      "Config": [
+        {
+          "Name": "Products swagger API",
+          "Version": "v1",
+          "Url": "https://localhost:6001/swagger/v1/swagger.json"
+        }
+      ]
+    }
+  ],
+  "GlobalConfiguration": {
+    "BaseUrl": "http://localhost",
+    "UseServiceDiscovery": true,
+    "ServiceDiscoveryProvider": {
+      "Scheme": "http",
+      "Host": "localhost",
+      "Port": 8500,
+      "Type": "Consul"
+    }
+  }
 }
